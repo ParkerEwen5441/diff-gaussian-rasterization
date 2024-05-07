@@ -220,8 +220,9 @@ int CudaRasterizer::Rasterizer::forward(
 	float* out_semantics,
 	int* radii,
 	bool debug,
-	bool include_feature)
+	bool include_semantics)
 {
+	/*
 	const float focal_y = height / (2.0f * tan_fovy);
 	const float focal_x = width / (2.0f * tan_fovx);
 
@@ -336,9 +337,12 @@ int CudaRasterizer::Rasterizer::forward(
 		imgState.n_contrib,
 		background,
 		out_color,
-		out_semantics), debug)
+		out_semantics,
+		include_semantics), debug)
 
 	return num_rendered;
+	*/
+	return 1;
 }
 
 // Produce necessary gradients for optimization, corresponding
@@ -378,6 +382,7 @@ void CudaRasterizer::Rasterizer::backward(
 	bool debug,
 	bool include_semantics)
 {
+	/*
 	GeometryState geomState = GeometryState::fromChunk(geom_buffer, P);
 	BinningState binningState = BinningState::fromChunk(binning_buffer, R);
 	ImageState imgState = ImageState::fromChunk(img_buffer, width * height);
@@ -417,7 +422,8 @@ void CudaRasterizer::Rasterizer::backward(
 		(float4*)dL_dconic,
 		dL_dopacity,
 		dL_dcolor,
-		dL_dsemantics), debug)
+		dL_dsemantics,
+		include_semantics), debug)
 
 	// Take care of the rest of preprocessing. Was the precomputed covariance
 	// given to us or a scales/rot pair? If precomputed, pass that. If not,
@@ -445,4 +451,5 @@ void CudaRasterizer::Rasterizer::backward(
 		dL_dsh,
 		(glm::vec3*)dL_dscale,
 		(glm::vec4*)dL_drot), debug)
+		*/
 }

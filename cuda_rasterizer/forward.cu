@@ -258,7 +258,7 @@ __global__ void preprocessCUDA(int P, int D, int M,
 // Main rasterization method. Collaboratively works on one tile per
 // block, each thread treats one pixel. Alternates between fetching 
 // and rasterizing data.
-template <uint32_t CHANNELS>
+template <uint32_t CHANNELS, uint32_t CHANNELS_semantics>
 __global__ void __launch_bounds__(BLOCK_X * BLOCK_Y)
 renderCUDA(
 	const uint2* __restrict__ ranges,
@@ -405,7 +405,7 @@ void FORWARD::render(
 	float* out_semantics,
 	bool include_semantics)
 {
-	renderCUDA<NUM_CHANNELS> << <grid, block >> > (
+	renderCUDA<NUM_CHANNELS, NUM_CHANNELS_semantics> << <grid, block >> > (
 		ranges,
 		point_list,
 		W, H,
