@@ -266,11 +266,14 @@ renderCUDA(
 	int W, int H,
 	const float2* __restrict__ points_xy_image,
 	const float* __restrict__ features,
+	const float* __restrict__ semantics,
 	const float4* __restrict__ conic_opacity,
 	float* __restrict__ final_T,
 	uint32_t* __restrict__ n_contrib,
 	const float* __restrict__ bg_color,
-	float* __restrict__ out_color)
+	float* __restrict__ out_color,
+	float* __restrict__ out_semantics,
+	bool include_semantics)
 {
 	// Identify current tile and associated min/max pixel range.
 	auto block = cg::this_thread_block();
@@ -301,6 +304,7 @@ renderCUDA(
 	uint32_t contributor = 0;
 	uint32_t last_contributor = 0;
 	float C[CHANNELS] = { 0 };
+	float F[CHANNELS_semantics] = { 0 };
 
 	// Iterate over batches until all done or range is complete
 	for (int i = 0; i < rounds; i++, toDo -= BLOCK_SIZE)
@@ -354,6 +358,12 @@ renderCUDA(
 			for (int ch = 0; ch < CHANNELS; ch++)
 				C[ch] += features[collected_id[j] * CHANNELS + ch] * alpha * T;
 
+			if (include_semantics)
+			{
+				for (int ch = 0; ch < CHANNELS_semantics; ch++)
+					F[ch] += semantics[collected_id[j] * CHANNELS_semantics + ch] * alpha * T;
+			}
+
 			T = test_T;
 
 			// Keep track of last range entry to update this
@@ -370,6 +380,12 @@ renderCUDA(
 		n_contrib[pix_id] = last_contributor;
 		for (int ch = 0; ch < CHANNELS; ch++)
 			out_color[ch * H * W + pix_id] = C[ch] + T * bg_color[ch];
+
+		if (include_semantics) 
+		{
+			for (int ch = 0; ch < CHANNELS_semantics; ch++)
+				out_semantics[ch * H * W + pix_id] = F[ch];
+		}
 	}
 }
 
@@ -380,11 +396,14 @@ void FORWARD::render(
 	int W, int H,
 	const float2* means2D,
 	const float* colors,
+	const float* semantics,
 	const float4* conic_opacity,
 	float* final_T,
 	uint32_t* n_contrib,
 	const float* bg_color,
-	float* out_color)
+	float* out_color,
+	float* out_semantics,
+	bool include_semantics)
 {
 	renderCUDA<NUM_CHANNELS> << <grid, block >> > (
 		ranges,
@@ -392,11 +411,14 @@ void FORWARD::render(
 		W, H,
 		means2D,
 		colors,
+		semantics,
 		conic_opacity,
 		final_T,
 		n_contrib,
 		bg_color,
-		out_color);
+		out_color,
+		out_semantics,
+		include_semantics);
 }
 
 void FORWARD::preprocess(int P, int D, int M,
