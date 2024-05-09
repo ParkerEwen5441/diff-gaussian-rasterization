@@ -222,7 +222,6 @@ int CudaRasterizer::Rasterizer::forward(
 	bool debug,
 	bool include_semantics)
 {
-	/*
 	const float focal_y = height / (2.0f * tan_fovy);
 	const float focal_x = width / (2.0f * tan_fovx);
 
@@ -341,8 +340,6 @@ int CudaRasterizer::Rasterizer::forward(
 		include_semantics), debug)
 
 	return num_rendered;
-	*/
-	return 1;
 }
 
 // Produce necessary gradients for optimization, corresponding
@@ -382,7 +379,6 @@ void CudaRasterizer::Rasterizer::backward(
 	bool debug,
 	bool include_semantics)
 {
-	/*
 	GeometryState geomState = GeometryState::fromChunk(geom_buffer, P);
 	BinningState binningState = BinningState::fromChunk(binning_buffer, R);
 	ImageState imgState = ImageState::fromChunk(img_buffer, width * height);
@@ -451,5 +447,4 @@ void CudaRasterizer::Rasterizer::backward(
 		dL_dsh,
 		(glm::vec3*)dL_dscale,
 		(glm::vec4*)dL_drot), debug)
-		*/
 }

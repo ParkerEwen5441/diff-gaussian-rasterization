@@ -59,7 +59,6 @@ RasterizeGaussiansCUDA(
   if (means3D.ndimension() != 2 || means3D.size(1) != 3) {
     AT_ERROR("means3D must have dimensions (num_points, 3)");
   }
-  /*
   const int P = means3D.size(0);
   const int H = image_height;
   const int W = image_width;
@@ -125,8 +124,6 @@ RasterizeGaussiansCUDA(
 																									include_semantics);
 	}
   return std::make_tuple(rendered, out_color, out_semantics, radii, geomBuffer, binningBuffer, imgBuffer);
-  */
-  return std::make_tuple(1, background, background, background, background, background, background);
 }
 
 std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor>
@@ -156,7 +153,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	const bool debug,
 	const bool include_semantics) 
 {
-	/*
   const int P = means3D.size(0);
   const int H = dL_dout_color.size(1);
   const int W = dL_dout_color.size(2);
@@ -223,8 +219,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
   }
 
   return std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dsemantics, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
-  */
-  return std::make_tuple(background, background, background, background, background, background, background, background, background);
 }
 
 torch::Tensor markVisible(
